@@ -8,68 +8,61 @@ Menguji akses baca dan tulis ke file yang sama menggunakan akun latihan berbeda,
 
 - Debian GNU/Linux 13 dengan terminal Bash
 - Akun `labuser1`, `labuser2`, dan group `labgroup`
-- File `/tmp/linux-access-lab/dokumen.txt` dari Lab 3
+- File `/home/labuser1/praktik/data.txt`
 - Akses `sudo`, serta perintah `sudo`, `id`, `stat`, `printf`, `tee`, `test`, `cat`, dan `chmod`
 
 ## Konfigurasi Uji
 
 | Item | Nilai awal untuk pengujian |
 | --- | --- |
-| File | `/tmp/linux-access-lab/dokumen.txt` |
-| Owner | `labuser1` |
-| Group | `labgroup` |
-| Anggota group | `labuser1` dan `labuser2` |
-| Permission awal | `640`: owner read/write, group read, others tanpa izin |
-| Permission berikutnya | `660`: owner dan group read/write, others tanpa izin |
+| File | `/home/labuser1/praktik/data.txt` |
+| Permission yang dilaporkan | `640`: owner read/write, group read, others tanpa izin |
+| Hasil baca `labuser2` | `Permission denied` |
+| Owner dan group file saat pengujian | Belum terverifikasi dari screenshot |
 
 ## Perintah dan Langkah Praktik
 
-1. Pastikan akun sudah menjadi anggota group, lalu periksa file. `id` memeriksa keanggotaan; `stat` memeriksa owner, group, dan mode. Jika file atau akun belum ada, kembali ke lab sebelumnya:
+1. Periksa keanggotaan dan metadata file sebelum menyimpulkan penyebab akses ditolak. Perintah berikut adalah pemeriksaan lanjutan yang disarankan; output-nya tidak tampak pada screenshot:
 
    ```bash
    id labuser1
    id labuser2
-   stat -c '%A (%a) %U:%G %n' /tmp/linux-access-lab/dokumen.txt
+   stat -c '%A (%a) %U:%G %n' /home/labuser1/praktik/data.txt
+   namei -l /home/labuser1/praktik/data.txt
    ```
 
-   Pastikan kedua user tercatat sebagai anggota `labgroup`. Jika keanggotaan baru ditambahkan, sesi login baru mungkin diperlukan untuk sesi interaktif.
+   `id` memeriksa group efektif akun, `stat` memeriksa permission dan ownership file, sedangkan `namei -l` menunjukkan permission setiap direktori pada path. Jika tersedia, `getfacl /home/labuser1/praktik/data.txt` dapat digunakan untuk memeriksa ACL.
 
-2. Atur file latihan ke owner/group yang disebutkan dan masukkan teks contoh ke file sebagai `labuser1`. `chown` diarahkan hanya ke file latihan; `tee` menulis teks yang diberikan ke file:
+2. Pada praktik yang dilaporkan, ownership diatur menggunakan `chown` dan permission file diatur ke `640`. Nilai owner/group yang diberikan oleh `chown` tidak terlihat pada bukti yang tersedia, sehingga periksa metadata sebelum menyebutkan hasil ownership. Contoh perintah permission untuk file tersebut:
 
    ```bash
-   sudo chown labuser1:labgroup /tmp/linux-access-lab/dokumen.txt
-   printf '%s\n' 'Isi uji akses' | sudo -u labuser1 -- tee /tmp/linux-access-lab/dokumen.txt
-   sudo chmod 640 /tmp/linux-access-lab/dokumen.txt
+   chmod 640 /home/labuser1/praktik/data.txt
+   stat -c '%A (%a) %U:%G %n' /home/labuser1/praktik/data.txt
    ```
 
-3. Uji akses baca dan tulis `labuser2` saat permission file adalah `640`. `test -r` memeriksa baca dan `test -w` memeriksa tulis. `printf` berikutnya menampilkan status perintah tepat sebelumnya (`0` berarti tes benar; nilai bukan `0` berarti tes tidak terpenuhi):
+3. Uji baca file sebagai kedua akun. Contoh di bawah menjalankan `cat` dengan identitas masing-masing akun. Screenshot yang disertakan menunjukkan percobaan baca sebagai `labuser2` berakhir dengan `Permission denied`:
 
    ```bash
-   sudo -u labuser2 -- test -r /tmp/linux-access-lab/dokumen.txt
-   printf 'status baca=%s\n' "$?"
-   sudo -u labuser2 -- test -w /tmp/linux-access-lab/dokumen.txt
-   printf 'status tulis=%s\n' "$?"
+   su -s /bin/bash labuser1 -c 'cat /home/labuser1/praktik/data.txt'
+   su -s /bin/bash labuser2 -c 'cat /home/labuser1/praktik/data.txt'
    ```
 
-   `test` mengembalikan status `0` jika kondisi benar dan status bukan `0` jika kondisi salah. Perintah `printf` mencetak status aktual dari perintah sebelumnya.
+   Jangan menafsirkan tidak adanya teks dari perintah `cat` pertama sebagai bukti pasti bahwa akses berhasil; file kosong juga tidak menampilkan isi. Simpan output dan status keluar aktual saat pengujian ulang.
 
-4. Berikan permission tulis kepada owner dan group dengan `chmod 660`, ulangi tes, lalu lakukan uji tulis nyata dengan menambahkan satu baris sebagai `labuser2`:
+## Hasil Praktik dan Analisis
 
-   ```bash
-   sudo chmod 660 /tmp/linux-access-lab/dokumen.txt
-   sudo -u labuser2 -- test -w /tmp/linux-access-lab/dokumen.txt
-   printf 'status tulis setelah chmod=%s\n' "$?"
-   printf '%s\n' 'Baris tambahan oleh labuser2' | sudo -u labuser2 -- tee -a /tmp/linux-access-lab/dokumen.txt
-   ```
+Hasil terakhir yang dilaporkan adalah `Permission denied` ketika `labuser2` membaca `/home/labuser1/praktik/data.txt`. Screenshot berikut memperlihatkan hasil tersebut. Tidak ada bukti bahwa penolakan akses telah diperbaiki.
 
-5. Uji membaca file sebagai kedua akun. `cat` mencoba membaca isi file menggunakan identitas user yang disebut:
+![Screenshot pengujian: labuser2 mendapat Permission denied saat membaca data.txt](evidence/04-access-testing-permission-denied.png)
 
-   ```bash
-   sudo -u labuser1 -- cat /tmp/linux-access-lab/dokumen.txt
-   sudo -u labuser2 -- cat /tmp/linux-access-lab/dokumen.txt
-   ```
+Dengan mode `640`, owner memiliki `rw-`, group memiliki `r--`, dan others tidak memiliki izin. Jika `labuser2` bukan owner, file dimiliki group `labgroup`, akun itu efektif menjadi anggota `labgroup`, dan seluruh direktori pada path dapat ditelusuri, bit baca group semestinya memberi akses. Karena hasil aktualnya ditolak, satu atau lebih kondisi tersebut mungkin tidak terpenuhi. Kemungkinan yang perlu diperiksa meliputi:
 
-   File dibuat kosong di Lab 3, sehingga `cat` dapat tidak menampilkan isi. Hal itu tidak menggantikan pemeriksaan permission dengan `test`.
+- group pemilik file bukan `labgroup`, atau ownership file berbeda dari yang diasumsikan;
+- keanggotaan `labuser2` pada `labgroup` belum efektif pada konteks/sesi pengujian;
+- permission execute (`x`) pada `/home`, `/home/labuser1`, atau `/home/labuser1/praktik` tidak mengizinkan traversal;
+- ACL atau kebijakan pembatasan akses lain memengaruhi hasil.
+
+Kemungkinan tersebut belum dibuktikan oleh screenshot. Periksa `id`, `stat`, `namei -l`, dan bila tersedia `getfacl`; jangan mengubah permission secara luas hanya untuk menghilangkan pesan penolakan.
 
 ## Penjelasan Perintah
 
@@ -77,23 +70,19 @@ Menguji akses baca dan tulis ke file yang sama menggunakan akun latihan berbeda,
 | --- | --- |
 | `id user` | Menampilkan UID, GID, dan group, contoh `id labuser2`. |
 | `stat -c format file` | Memeriksa mode dan owner; format `'%A (%a) %U:%G %n'` menampilkan permission simbolik/numerik serta owner/group/path. |
-| `sudo chown user:group file` | Menyiapkan owner dan group file uji, contoh `sudo chown labuser1:labgroup /tmp/linux-access-lab/dokumen.txt`. |
-| `printf '%s\n' teks` | Mengirim teks dan newline ke output; dapat dipipe ke program penulis file, contoh pada langkah 2. |
-| `sudo -u user -- perintah` | Menjalankan perintah sebagai user yang dipilih, contoh `sudo -u labuser2 -- test -r /tmp/linux-access-lab/dokumen.txt`. |
-| `tee file` / `tee -a file` | Menulis input ke file; `-a` menambahkan di akhir, contoh dipakai untuk uji tulis sebagai user tertentu. |
-| `chmod 640 file` | Owner read/write, group read, others tanpa izin. |
-| `test -r file` / `test -w file` | Menguji apakah user dapat membaca/menulis file; status keluar `0` berarti izin tersedia. |
-| `printf 'status=%s\n' "$?"` | Menampilkan status keluar perintah sebelumnya. Letakkan tepat sesudah perintah `test`. |
-| `chmod 660 file` | Memberi owner dan group read/write serta menolak izin others. |
-| `cat file` | Membaca isi file dengan hak user yang menjalankan perintah, contoh `sudo -u labuser2 -- cat /tmp/linux-access-lab/dokumen.txt`. |
+| `namei -l path` | Memeriksa permission tiap komponen direktori dan file pada path. |
+| `getfacl file` | Memeriksa ACL jika utilitas tersedia pada sistem. |
+| `chmod 640 file` | Mengatur owner `rw`, group `r`, dan others tanpa izin. |
+| `su -s /bin/bash user -c 'perintah'` | Menjalankan perintah menggunakan shell dan identitas user yang disebut; contoh pengujian ada pada langkah 3. |
+| `cat file` | Mencoba membaca isi file dengan hak akun yang menjalankannya. |
 
 ## Hasil yang Diharapkan
 
-**Target yang diharapkan (bukan hasil praktik nyata):** jika owner `labuser1`, group `labgroup`, `labuser2` anggota group, dan permission `640`, maka tes baca seharusnya terpenuhi sedangkan tes tulis seharusnya tidak terpenuhi. Setelah mode menjadi `660`, tes tulis seharusnya terpenuhi dan penambahan teks sebagai `labuser2` seharusnya berhasil. ACL, permission direktori, atau konfigurasi mesin dapat memengaruhi hasil. Catat status dan output yang benar-benar diperoleh; jangan menyalin target ini sebagai output nyata.
+**Hasil aktual:** percobaan baca `labuser2` ditolak dengan `Permission denied`. Hasil ini tetap menjadi hasil pengujian yang dilaporkan; jangan menggantinya dengan target teoritis atau menyatakan bahwa akses sudah diperbaiki. Owner/group, permission direktori, keanggotaan efektif, dan ACL belum terverifikasi pada bukti yang tersedia.
 
 ## Kesimpulan
 
-Jelaskan hasil uji baca/tulis untuk masing-masing user dan bagaimana perubahan permission memengaruhi akses. Gunakan hasil terminal asli, bukan perkiraan.
+Jelaskan hasil uji yang benar-benar diperoleh dan hubungkan dengan metadata file serta permission direktori. Untuk bukti saat ini, simpulkan bahwa `labuser2` mendapat `Permission denied`; penyebab spesifik belum dapat dipastikan dari screenshot saja.
 
 ## Bukti Praktik
 

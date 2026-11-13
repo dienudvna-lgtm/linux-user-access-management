@@ -4,7 +4,7 @@ Dokumentasi praktik kompetensi **Mengelola User dan Hak Akses Linux** untuk sisw
 
 ## Tujuan
 
-Project ini membantu siswa memahami cara membuat dan mengelola akun serta group praktik, mengatur pemilik dan permission file, kemudian menguji akses memakai dua akun yang berbeda. Setiap lab menyediakan template bukti teks untuk mencatat perintah yang benar-benar dijalankan, output terminal asli, dan analisis hasil.
+Project ini mendokumentasikan praktik kompetensi **Mengelola User dan Hak Akses Linux** pada Debian GNU/Linux 13. Praktik yang dilaporkan mencakup pembuatan akun dan group, pengaturan ownership dan permission, serta pengujian akses file oleh dua akun. Hasil pengujian dicatat apa adanya, termasuk ketika akses ditolak.
 
 > Jalankan praktik di mesin Debian 13 khusus latihan, sebaiknya mesin virtual. Jangan mengubah akun sistem atau akun utama Debian. Jangan menghapus akun selain `labuji` yang Anda buat sendiri untuk latihan ini. Jangan mencatat password atau hash password di dokumentasi.
 
@@ -17,7 +17,8 @@ Project ini membantu siswa memahami cara membuat dan mengelola akun serta group 
 | Hak akses | Akun praktikan yang dapat menggunakan `sudo` |
 | Akun latihan | `labuser1`, `labuser2`, dan akun uji sementara `labuji` |
 | Group latihan | `labgroup` |
-| Direktori file uji | `/tmp/linux-access-lab` |
+| Direktori file uji yang tampak pada screenshot | `/home/labuser1/praktik` |
+| File uji | `data.txt` |
 | Container | Tidak digunakan |
 
 Pastikan mesin benar-benar Debian 13 sebelum mulai. `cat /etc/os-release` menampilkan identitas sistem operasi, sedangkan `bash --version` menampilkan versi Bash. Kedua perintah ini hanya memeriksa informasi dan tidak mengubah sistem.
@@ -31,11 +32,11 @@ bash --version
 
 | Urutan | Materi | Panduan dan bukti |
 | --- | --- | --- |
-| 1 | Membuat, mengubah, mengatur password, dan menghapus akun uji | [Panduan Lab 1](labs/01-user-management/README.md) · [Bukti Lab 1](labs/01-user-management/evidence/catatan-praktik.md) |
-| 2 | Membuat group, menambahkan anggota, dan memeriksa user/group | [Panduan Lab 2](labs/02-group-management/README.md) · [Bukti Lab 2](labs/02-group-management/evidence/catatan-praktik.md) |
-| 3 | Memahami read, write, execute dan mengatur permission | [Panduan Lab 3](labs/03-linux-permissions/README.md) · [Bukti Lab 3](labs/03-linux-permissions/evidence/catatan-praktik.md) |
-| 4 | Mengatur pemilik dan group file | [Panduan Lab 4](labs/04-ownership-management/README.md) · [Bukti Lab 4](labs/04-ownership-management/evidence/catatan-praktik.md) |
-| 5 | Menguji akses file dengan dua akun | [Panduan Lab 5](labs/05-access-testing/README.md) · [Bukti Lab 5](labs/05-access-testing/evidence/catatan-praktik.md) |
+| 1 | Membuat akun `labuser1` dan `labuser2` dengan `adduser` | [Panduan Lab 1](labs/01-user-management/README.md) · [Bukti Lab 1](labs/01-user-management/evidence/catatan-praktik.md) |
+| 2 | Membuat `labgroup` dan menambahkan akun dengan `usermod -aG` | [Panduan Lab 2](labs/02-group-management/README.md) · [Bukti Lab 2](labs/02-group-management/evidence/catatan-praktik.md) |
+| 3 | Membuat file `data.txt` dan mengatur permission `640` | [Panduan Lab 3](labs/03-linux-permissions/README.md) · [Bukti Lab 3](labs/03-linux-permissions/evidence/catatan-praktik.md) |
+| 4 | Mengatur ownership file dengan `chown` | [Panduan Lab 4](labs/04-ownership-management/README.md) · [Bukti Lab 4](labs/04-ownership-management/evidence/catatan-praktik.md) |
+| 5 | Menguji baca file; `labuser2` mendapat `Permission denied` | [Panduan Lab 5](labs/05-access-testing/README.md) · [Bukti Lab 5](labs/05-access-testing/evidence/catatan-praktik.md) · [Screenshot](labs/05-access-testing/evidence/04-access-testing-permission-denied.png) |
 | Referensi | Capaian pembelajaran | [Learning Outcome](docs/learning-outcome.md) |
 | Alat bantu | Informasi akun, group, dan permission path | [Skrip user-access-info.sh](scripts/user-access-info.sh) |
 
@@ -71,6 +72,7 @@ Linux-User-Access-Management/
 │       ├── README.md
 │       └── evidence/
 │           ├── .gitkeep
+│           ├── 04-access-testing-permission-denied.png
 │           └── catatan-praktik.md
 └── scripts/
    └── user-access-info.sh
@@ -93,7 +95,7 @@ Linux-User-Access-Management/
 
 ## Bukti Praktik
 
-Bukti project berupa file Markdown atau teks. Tidak ada output yang diisi sebelumnya; praktikan mengisi tabel dengan perintah, output terminal asli, dan analisis sendiri. Jangan memasukkan password, token, hash, atau informasi pribadi.
+Bukti project berupa file Markdown, teks, dan screenshot yang tersedia. Screenshot Lab 05 menunjukkan percobaan membaca `/home/labuser1/praktik/data.txt` sebagai `labuser2` berakhir dengan `Permission denied`. Hasil ini tidak dinyatakan berhasil dan penyebab pastinya belum dipastikan dari screenshot saja. Template catatan praktik tetap kosong sampai output terminal asli dicatat; jangan mengarang output atau memasukkan password, token, hash, atau informasi pribadi.
 
 ## Mengunggah ke GitHub
 

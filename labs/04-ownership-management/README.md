@@ -62,6 +62,10 @@ Perintah hanya menyentuh dua file khusus di `/tmp/linux-access-lab`. Jangan mena
 
 **Target yang diharapkan (bukan hasil praktik nyata):** `kepemilikan.txt` dimiliki `labuser1:labgroup`. Group `berkas-group.txt` berubah menjadi `labgroup`, sedangkan owner tetap akun pembuatnya. Pastikan metadata aktual dengan `stat` dan catat apa yang benar-benar terjadi.
 
+## Praktik yang Dilaporkan
+
+Perintah `chown` digunakan untuk mengatur ownership file `data.txt` di direktori praktik. Laporan yang tersedia tidak menyebut nilai owner dan group yang ditetapkan, jadi nilai tersebut tidak disimpulkan. Periksa dengan `stat -c '%A (%a) %U:%G %n' /home/labuser1/praktik/data.txt` bila ingin melengkapi bukti metadata.
+
 ## Kesimpulan
 
 Jelaskan perbedaan pemilik file dan group pemilik, serta kapan `chown` atau `chgrp` digunakan.

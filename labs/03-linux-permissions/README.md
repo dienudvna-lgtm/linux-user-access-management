@@ -66,6 +66,10 @@ Nilai numerik dijumlahkan untuk tiap kelas: `r=4`, `w=2`, dan `x=1`. Contoh aman
 
 **Target yang diharapkan (bukan hasil praktik nyata):** permission file setara dengan `640` setelah kedua cara diterapkan. Direktori `2770` memberi owner dan anggota `labgroup` akses telusur, tanpa akses untuk others. Periksa hasil yang benar-benar muncul dan catat di template bukti.
 
+## Praktik yang Dilaporkan
+
+File yang digunakan pada praktik adalah `data.txt` di direktori `/home/labuser1/praktik`, dengan permission diatur ke `640`. Screenshot Lab 05 mengonfirmasi nama dan path file tersebut serta hasil penolakan baca oleh `labuser2`; screenshot tidak menampilkan pemeriksaan metadata permission.
+
 ## Kesimpulan
 
 Jelaskan arti setiap kelompok permission dan perbedaan cara numerik dengan cara simbolik. Cocokkan kesimpulan dengan hasil pemeriksaan Anda sendiri.

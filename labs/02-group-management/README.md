@@ -68,6 +68,10 @@ Perubahan group biasanya terlihat saat sesi login baru dimulai. Untuk sesi shell
 
 **Target yang diharapkan (bukan hasil praktik nyata):** `labgroup` tersedia dan kedua akun tercatat sebagai anggota tambahan. Perubahan group terlihat pada data akun; sesi login interaktif yang sudah terbuka mungkin perlu dimulai ulang. Catat hasil aktual pada template bukti.
 
+## Praktik yang Dilaporkan
+
+Group `labgroup` dibuat dan akun `labuser1` serta `labuser2` ditambahkan menggunakan `usermod -aG`. Tidak ada output `id`, `groups`, atau `getent` yang disertakan, sehingga keanggotaan efektif pada sesi pengujian terakhir tetap perlu diverifikasi.
+
 ## Kesimpulan
 
 Jelaskan perbedaan GID utama dan group tambahan, serta alasan menggunakan `usermod -aG` ketika menambahkan keanggotaan.

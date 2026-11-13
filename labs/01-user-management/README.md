@@ -99,6 +99,10 @@ Buat akun hanya jika nama tersebut belum digunakan. Jika `getent passwd` menemuk
 
 **Target yang diharapkan (bukan hasil praktik nyata):** `labuser1` dan `labuser2` terdaftar untuk lab berikutnya, keterangan `labuser1` berubah, dan `labuji` tidak lagi terdaftar setelah dihapus. Hasil praktik nyata hanya dicatat pada template bukti setelah perintah dijalankan. Password tidak boleh dicatat.
 
+## Praktik yang Dilaporkan
+
+Pada praktik Debian GNU/Linux 13, akun `labuser1` dan `labuser2` dibuat menggunakan `adduser`. Informasi lain, seperti output pembuatan akun atau langkah penghapusan akun uji, tidak tersedia pada laporan ini dan tidak diasumsikan telah dilakukan.
+
 ## Kesimpulan
 
 Tuliskan kesimpulan berdasarkan hasil praktik yang benar-benar Anda peroleh, terutama perbedaan membuat akun, mengubah atribut akun, mengatur password, dan menghapus akun uji.
